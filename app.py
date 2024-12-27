@@ -49,7 +49,7 @@ def login():
             user = Client.query.filter_by(username=username).first()
             if user and check_password_hash(user.password, password):
                 session['user_type'] = 'client'
-                session['client_id'] = 5
+                session['client_id'] = user.id
                 session['username'] = username
                 return redirect(url_for('client_dashboard'))
         
@@ -151,7 +151,6 @@ def client_dashboard():
     print(session['user_type'])
     if 'client' not in session['user_type']:
         return redirect(url_for('login'))
-    
     all_candidates = Candidate.query.all()
     context = {'all_candidates':all_candidates}
     return render_template('client_dashboard.html', context=context)
@@ -189,8 +188,9 @@ def candidate_status(candidate_id):
 
 @app.route('/add_candidate', methods=['GET', 'POST'])
 def add_candidate():
-    #if 'client' not in session:
-        #return redirect(url_for('login'))
+
+    if 'client' not in session['user_type']:
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
         first_name = request.form['first_name']
@@ -199,9 +199,11 @@ def add_candidate():
         pan_card = request.form['pan_card']
         education = request.form['education']
         address = request.form['address']
+        client_id = session['client_id']
+
         
         # Create new candidate
-        candidate = Candidate(first_name=first_name, last_name=last_name, dob=dob, pan_card=pan_card, education=education, address=address, client_id=session['client_id'])
+        candidate = Candidate(first_name=first_name, last_name=last_name, dob=dob, pan_card=pan_card, education=education, address=address, client_id=client_id)
         db.session.add(candidate)
         db.session.commit()
 
