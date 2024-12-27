@@ -29,6 +29,9 @@ class InternalTeam(db.Model):
     phone = db.Column(db.String(15), nullable=True)
     role = db.Column(db.String(20), nullable=False)  # e.g., 'admin', 'client', 'internal_team', 'candidate'
 
+    def __str__(self):
+        return self.username
+
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
@@ -45,6 +48,9 @@ class Candidate(db.Model):
     address_status = db.Column(db.String(50), default="Pending")
     education_status = db.Column(db.String(50), default="Pending")
     employment_status = db.Column(db.String(50), default="Pending")
+
+    def __str__(self):
+        return self.first_name
 
 class EmploymentHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

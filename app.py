@@ -47,18 +47,25 @@ def login():
         
         elif user_type == 'client':
             user = Client.query.filter_by(username=username).first()
+            print(username)
+            print(check_password_hash(user.password, password))
+            print(password)
             if user and check_password_hash(user.password, password):
                 session['user_type'] = 'client'
                 session['client_id'] = user.id
                 session['username'] = username
                 session['client_name'] = user.client_name
+
                 return redirect(url_for('client_dashboard'))
         
         elif user_type == 'internal_team':
             user = InternalTeam.query.filter_by(username=username).first()
             if user and check_password_hash(user.password, password):
                 session['user_type'] = 'internal_team'
+                session['username'] = username
                 return redirect(url_for('internal_team_dashboard'))
+            else:
+                return "Invalid pass"
         
         elif user_type == 'candidate':
             user = Candidate.query.filter_by(pan_card=username).first()
@@ -163,18 +170,61 @@ def view_candidate_status(candidate_id):
         return redirect(url_for('login'))
 
     candidate = Candidate.query.get_or_404(candidate_id)
-    print(candidate)
     # Ensure the candidate belongs to the logged-in client
     if candidate.client_id != session['client_id']:
         flash('Unauthorized access to candidate status.', 'danger')
         return redirect(url_for('client_dashboard'))
     return render_template('candidate_status.html', candidate=candidate)
 
-@app.route('/internal_team_dashboard')
+@app.route('/update_candidate_status/<int:candidate_id>', methods=['GET', 'POST'])
+def update_candidate_status(candidate_id):
+    #if 'user_id' not in session or session.get('user_type') != 'internal_team':
+        #flash('You must be logged in as an internal team member to update candidate status.', 'danger')
+        #return redirect(url_for('login'))
+
+    candidate = Candidate.query.get_or_404(candidate_id)
+
+    if request.method == 'POST':
+        # Retrieve the selected statuses for each verification check
+        address_status = request.form['address_status']
+        education_status = request.form['education_status']
+        employment_status = request.form['employment_status']
+
+        # Update the candidate status
+        candidate.address_status = address_status
+        candidate.education_status = education_status
+        candidate.employment_status = employment_status
+
+        # Commit changes to the database
+        db.session.commit()
+
+        flash(f"Status for {candidate.first_name} {candidate.last_name} has been updated!", 'success')
+        return redirect(url_for('internal_team_dashboard'))
+
+    return render_template('update_candidate_status.html', candidate=candidate)
+
+
+
+@app.route('/internal_team_dashboard',methods=['GET','POST'])
 def internal_team_dashboard():
-    if 'internal_team' not in session:
+    if 'internal_team' not in session['user_type']:
         return redirect(url_for('login'))
-    return render_template('internal_team_dashboard.html')
+    all_clients = Client.query.all()
+
+    candidates = []
+
+    if request.method == 'POST':
+        # Filter by selected client
+        client_id = request.form.get('client_id')
+        print(client_id)
+        print(Candidate.query.filter_by(client_id=client_id).all())
+        if client_id:
+            candidates = Candidate.query.filter_by(client_id=client_id).all()
+        else:
+            flash('Please select a client to filter candidates.', 'warning')
+
+    context = {'all_clients': all_clients,'candidates':candidates}
+    return render_template('internal_team_dashboard.html', context=context)
 
 @app.route('/candidate_status/<int:candidate_id>')
 def candidate_status(candidate_id):
