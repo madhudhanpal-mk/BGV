@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid bg-dark text-white py-4">
+    <div class="container">
+        <h1>Welcome, {{ session['username'] }} (Admin)</h1>
+        <p class="lead">You willl have access to all the Clients and Internal teams information.</p>
+
+        <!-- Admin Actions -->
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-secondary text-white shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Clients</h5>
+                        <p class="card-text">View and approve client registrations.</p>
+                        <a href="{{ url_for('manage_clients') }}" class="btn btn-primary">Manage Clients</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+{% endblock %}

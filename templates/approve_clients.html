@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Approve Clients</h1>
+    {% if clients %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Client Name</th>
+                    <th>Location</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ client.name }}</td>
+                    <td>{{ client.location }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('manage_clients') }}">
+                            <input type="hidden" name="client_id" value="{{ client.id }}">
+                            <button type="submit" class="btn btn-success">Approve</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No unapproved clients found.</p>
+    {% endif %}
+</div>
+{% endblock %}

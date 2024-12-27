@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Candidate Status</h2>
+
+<p><strong>Name:</strong> {{ candidate.first_name }} {{ candidate.last_name }}</p>
+<p><strong>Status:</strong> {{ candidate.status }}</p>
+
+<h4>BGV Checks</h4>
+
+<div class="list-group">
+    <h5>Address: {{ candidate.address_status }}</h5>
+    <h5>Employment: {{ candidate.employment_status }}</h5>
+    <h5>Education: {{ candidate.education_status }}</h5>
+</div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Add New Candidate</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="last_name">Last Name</label>
+        <input type="text" name="last_name" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="dob">Date of Birth</label>
+        <input type="date" name="dob" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="pan_card">PAN Card Number</label>
+        <input type="text" name="pan_card" class="form-control" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="education">Education</label>
+        <textarea name="education" class="form-control" required></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label for="address">Address</label>
+        <textarea name="address" class="form-control" required></textarea>
+    </div>
+    
+    <h4>Employment History (up to 5 entries)</h4>
+    <div id="employment_history">
+        <div class="employment-entry">
+            <div class="form-group">
+                <label for="company_name_1">Company Name</label>
+                <input type="text" name="company_name_1" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="start_date_1">Start Date</label>
+                <input type="date" name="start_date_1" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="end_date_1">End Date</label>
+                <input type="date" name="end_date_1" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="designation_1">Designation</label>
+                <input type="text" name="designation_1" class="form-control">
+            </div>
+        </div>
+    </div>
+
+    <button type="button" id="add-employment" class="btn btn-secondary">Add Employment History</button>
+    
+    <button type="submit" class="btn btn-primary">Add Candidate</button>
+</form>
+
+<script>
+    let employmentCount = 1;
+
+    document.getElementById("add-employment").addEventListener("click", function() {
+        if (employmentCount < 5) {
+            employmentCount++;
+            const employmentDiv = document.createElement("div");
+            employmentDiv.classList.add("employment-entry");
+
+            employmentDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="company_name_${employmentCount}">Company Name</label>
+                    <input type="text" name="company_name_${employmentCount}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="start_date_${employmentCount}">Start Date</label>
+                    <input type="date" name="start_date_${employmentCount}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="end_date_${employmentCount}">End Date</label>
+                    <input type="date" name="end_date_${employmentCount}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="designation_${employmentCount}">Designation</label>
+                    <input type="text" name="designation_${employmentCount}" class="form-control">
+                </div>
+            `;
+
+            document.getElementById("employment_history").appendChild(employmentDiv);
+        } else {
+            alert("You can only add up to 5 employment history entries.");
+        }
+    });
+</script>
+
+{% endblock %}

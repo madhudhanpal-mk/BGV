@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-white">Manage Clients</h1>
+    <p class="text-white">Approve or reject client registrations.</p>
+    
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert alert-{{ messages[0][0] }}">
+                {{ messages[0][1] }}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Client Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Location</th>
+                <th scope="col">Client Status</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+                <tr>
+                    <th scope="row">{{ client.id }}</th>
+                    <td>{{ client.username }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.location }}</td>
+                    {% if client.approved %}
+                        <td>Active</td>
+                    {% else %}
+                        <td>Not Approved yet</td>
+                    {% endif %}
+                    <td>
+                        {% if client.approved %}
+                            <form action="{{ url_for('reject_client', client_id=client.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Remove Client</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('approve_client', client_id=client.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-success">Approve</button>
+                            </form>
+                            <form action="{{ url_for('reject_client', client_id=client.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Reject</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

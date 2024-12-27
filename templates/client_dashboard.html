@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Client Dashboard</h2>
+<div >
+    <a href="{{ url_for('add_candidate') }}" class="btn btn-primary">Add New Candidate</a>
+</div>
+<div class="container mt-5" role="group">
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Date of Birth</th>
+                <th scope="col">PAN Card</th>
+                <th scope="col">Education</th>
+                <th scope="col">Address</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for candidate in context["all_candidates"] %}
+                <tr>
+                    <th scope="row">{{ candidate.id }}</th>
+                    <td>{{ candidate.first_name }}</td>
+                    <td>{{ candidate.last_name }}</td>
+                    <td>{{ candidate.dob }}</td>
+                    <td>{{ candidate.pan_card }}</td>
+                    <td>{{ candidate.education }}</td>
+                    <td>{{ candidate.address }}</td>
+                    <td>{{ candidate.status }}</td>
+            {% endfor %}
+        </tbody>
+            </table>
+</div>
+
+{% endblock %}
