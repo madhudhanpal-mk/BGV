@@ -51,6 +51,7 @@ def login():
                 session['user_type'] = 'client'
                 session['client_id'] = user.id
                 session['username'] = username
+                session['client_name'] = user.client_name
                 return redirect(url_for('client_dashboard'))
         
         elif user_type == 'internal_team':
@@ -148,28 +149,26 @@ def reject_client(client_id):
 
 @app.route('/client_dashboard')
 def client_dashboard():
-    print(session['user_type'])
     if 'client' not in session['user_type']:
         return redirect(url_for('login'))
-    all_candidates = Candidate.query.all()
-    context = {'all_candidates':all_candidates}
+    all_candidates = Candidate.query.filter_by(client_id=session['client_id']).all()
+    context = {'all_candidates':all_candidates, 'client_name':session['client_name'] }
     return render_template('client_dashboard.html', context=context)
 
 
+@app.route('/candidate_status/<int:candidate_id>', methods=['GET'])
+def view_candidate_status(candidate_id):
+    if 'client_id' not in session or session.get('user_type') != 'client':
+        flash('You must be logged in as a client to view candidate status.', 'danger')
+        return redirect(url_for('login'))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    candidate = Candidate.query.get_or_404(candidate_id)
+    print(candidate)
+    # Ensure the candidate belongs to the logged-in client
+    if candidate.client_id != session['client_id']:
+        flash('Unauthorized access to candidate status.', 'danger')
+        return redirect(url_for('client_dashboard'))
+    return render_template('candidate_status.html', candidate=candidate)
 
 @app.route('/internal_team_dashboard')
 def internal_team_dashboard():
@@ -183,8 +182,6 @@ def candidate_status(candidate_id):
         return redirect(url_for('login'))
     candidate = Candidate.query.get(candidate_id)
     return render_template('candidate_status.html', candidate=candidate)
-
-
 
 @app.route('/add_candidate', methods=['GET', 'POST'])
 def add_candidate():
@@ -222,6 +219,45 @@ def add_candidate():
         return redirect(url_for('client_dashboard'))
     
     return render_template('add_candidate.html')
+
+@app.route('/add_internal_team', methods=['GET', 'POST'])
+def add_internal_team():
+    #if 'user_id' not in session or session.get('user_type') != 'admin':
+     #   flash('You must be logged in as an admin to add internal team members.', 'danger')
+      #  return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Retrieve form data
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        phone = request.form['phone']
+
+        # Generate username and default password
+        username = f"{last_name[0].lower()}{first_name[:4].lower()}"
+        password = generate_password_hash('1234')  # Default password is "1234"
+
+        # Check if the username already exists
+        existing_user = InternalTeam.query.filter_by(username=username).first()
+        if existing_user:
+            flash('A user with this username already exists.', 'danger')
+            return redirect(url_for('add_internal_team'))
+
+        # Add the new internal team member
+        new_user = InternalTeam(
+            username=username,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            phone=phone,
+            role='internal_team'
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash(f'Internal team member {first_name} {last_name} added successfully! Username: {username}, Password: 1234', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('add_internal_team.html')
 
 
 if __name__ == '__main__':

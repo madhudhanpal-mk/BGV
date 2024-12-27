@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Client Dashboard</h2>
-<h2> CLient ID: {{context.client_id}}</h2>
+<h2>Welcome back, {{context.client_name}}</h2>
 <div >
     <a href="{{ url_for('add_candidate') }}" class="btn btn-primary">Add New Candidate</a>
 </div>
@@ -15,9 +14,7 @@
                 <th scope="col">Last Name</th>
                 <th scope="col">Date of Birth</th>
                 <th scope="col">PAN Card</th>
-                <th scope="col">Education</th>
-                <th scope="col">Address</th>
-                <th scope="col">Status</th>
+                <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -28,9 +25,9 @@
                     <td>{{ candidate.last_name }}</td>
                     <td>{{ candidate.dob }}</td>
                     <td>{{ candidate.pan_card }}</td>
-                    <td>{{ candidate.education }}</td>
-                    <td>{{ candidate.address }}</td>
-                    <td>{{ candidate.status }}</td>
+                    <td>
+                        <a href="{{ url_for('view_candidate_status', candidate_id=candidate.id) }}" class="btn btn-primary btn-sm">View Status</a>
+                    </td>
             {% endfor %}
         </tbody>
             </table>

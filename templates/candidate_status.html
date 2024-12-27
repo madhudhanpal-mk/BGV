@@ -1,17 +1,16 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<h2>Candidate Status</h2>
+<h1 class="mt-3">Candidate Status</h1>
+<h4>{{ candidate.first_name }} {{ candidate.last_name }}</h4>
+<p><strong>Date of Birth:</strong> {{ candidate.dob }}</p>
+<p><strong>PAN Card:</strong> {{ candidate.pan_card }}</p>
 
-<p><strong>Name:</strong> {{ candidate.first_name }} {{ candidate.last_name }}</p>
-<p><strong>Status:</strong> {{ candidate.status }}</p>
+<h3 class="mt-4">Background Verification Checks</h3>
 
-<h4>BGV Checks</h4>
+<h5>Address : {{ candidate.address_status }}</h5>
+<h5>Education : {{ candidate.education_status }}</h5>
+<h5>Employment : {{ candidate.employment_status }}</h5>
 
-<div class="list-group">
-    <h5>Address: {{ candidate.address_status }}</h5>
-    <h5>Employment: {{ candidate.employment_status }}</h5>
-    <h5>Education: {{ candidate.education_status }}</h5>
-</div>
-
+<a href="{{ url_for('client_dashboard') }}" class="btn btn-secondary mt-4">Back to Dashboard</a>
 {% endblock %}

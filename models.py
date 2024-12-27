@@ -22,11 +22,12 @@ class Client(db.Model):
 
 class InternalTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    phone_number = db.Column(db.String(15), nullable=False)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(20), nullable=False)
+    phone = db.Column(db.String(15), nullable=True)
+    role = db.Column(db.String(20), nullable=False)  # e.g., 'admin', 'client', 'internal_team', 'candidate'
 
 class Candidate(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +40,11 @@ class Candidate(db.Model):
     employment_history = db.relationship('EmploymentHistory', backref='candidate', lazy=True)
     status = db.Column(db.String(20), default="Pending")
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'), nullable=False)
+
+     # Verification statuses
+    address_status = db.Column(db.String(50), default="Pending")
+    education_status = db.Column(db.String(50), default="Pending")
+    employment_status = db.Column(db.String(50), default="Pending")
 
 class EmploymentHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
